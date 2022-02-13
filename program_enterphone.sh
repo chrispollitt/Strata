@@ -50,12 +50,25 @@ function main {
   adb -s $phon shell "am start-activity -W -a android.intent.action.CALL -d tel:'$dial'"
   # Wait
   echo -n "Calling"
+  (( i = 0 ))
   while true; do
     echo -n "."
+    (( i += 1 ))
+    if (( i > 30 )); then 
+      echo "Timeout 30 sec"
+      break
+    fi
     IFS= read -r -t 2 -n 1 -s holder && stop="$holder"
-    if [[ -n $stop ]]; then break; fi
+    if [[ -n $stop ]]; then 
+      echo "User interrupt"
+      break
+    fi
     call=$(adb shell dumpsys telecom)
-    if [[ $call != *state=* ]]; then break; fi
+    if [[ $call != *state=* ]]; then 
+      echo "Hungup"
+      break 
+    fi
+    sleep 1
   done
   echo "Done"
   # Hang-up

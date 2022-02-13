@@ -6,6 +6,7 @@ use Net::IMAP::Simple;
 use Net::SMTP;
 use Email::MIME;
 use Data::Dumper;
+use File::Slurp;
 use Foo_Bar;
 use strict;
 use warnings; no warnings  'experimental';
@@ -42,14 +43,21 @@ sub check() {
     my $msg  = Email::MIME->new(join '', @{ $imap->get($i) } ); 
     print "--------------------------------------------\n";    
     printf("%s[%03d] %s %s\n", $star, $i, $msg->header('From'), $msg->header('Subject'));
-    print "--body 0:\n" . $msg->body . "\n" if(length $msg->body);
+#    print "--body 0:\n" . $msg->body . "\n" if(length $msg->body);
     my $j=1;
     $msg->walk_parts( sub {
       my ($part) = @_;
       return if $part->subparts; # multipart
       print "content_type: " . $part->content_type . "\n";
       if ( ($part->content_type =~ m,text/plain,i) and (length $part->body)) {
-        print "--body $j:\n" . $part->body . "\n";
+#        print "--body $j:\n" . $part->body . "\n";
+      } elsif(
+        (defined $part->filename) and 
+        ($part->filename =~ /\.(pdf)$/i) and 
+        (defined $part->body) and
+        (length $part->body)
+      ) {
+        write_file($ENV{HOME} . '/Downloads/' . $part->filename, $part->body);
       }
       $j++;
     });
@@ -75,7 +83,7 @@ sub sendmsg($to, $subject, $body) {
   
   # Send message
   $smtp->mail($User);                         # Create new message
-  $smtp->to($to));                            # To
+  $smtp->to($to);                            # To
   $smtp->data();                              # .
   $smtp->datasend("To: $to\n");               # To
   $smtp->datasend("Subject: $subject\n");     # Subject
@@ -103,7 +111,7 @@ _EOF_
 
   initg();
   check();
-  sendmsg($to, $subject, $body);
+#  sendmsg($to, $subject, $body);
 }
 
 main();

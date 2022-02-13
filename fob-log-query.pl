@@ -9,20 +9,15 @@ use DBD::Pg;
 use Data::Dumper;
 use FindBin qw($Bin);
 use File::Copy;
-use Foo_Bar;
 use strict;
 use warnings; no warnings  'experimental';
 binmode(STDOUT, ":utf8");
 
-our $Host = 'mesh';
-our $User = undef;
-our $Pass = undef;
 our $Csv_ext   = '.csv';
 our $Xls_ext   = '.xlsx';
 our $Xls_file  = $ENV{HOME} . '/Dropbox/Shared/Home/!Contacts & Roles' . $Xls_ext;
 
 sub main(@argv) {
-  ($User,$Pass) = foo("$Host:pg");
   my $csv = "owners";
   chdir("$Bin/../tmp");
   # Convert Excel to CSV
@@ -45,7 +40,7 @@ sub main(@argv) {
     }
   ) or die "Cannot connect: $DBI::errstr";
   my $dbh2 = DBI->connect(
-    "dbi:Pg:dbname=mesh;host=$Host", $User, $Pass, {
+    "dbi:Pg:dbname=mesh;host=mesh", 'mesh', 'mesh', {
       AutoCommit => 0,
       RaiseError => 1,
     }
@@ -99,7 +94,7 @@ echo "select distinct date(logtime) from logs where firstname = 'Garbage' order 
 
 -----------------------------------------------------
 
-PGPASSWORD=xxx psql -h mesh -U xxx -d mesh
+PGPASSWORD=mesh psql -h mesh -U mesh -d mesh
 
 \h        HELP
 \l        LIST DATABSES
@@ -171,4 +166,36 @@ ID,INITIALS,NAME,COMMENT
 1,MH,"Houle, Michelle","Michelle ""Sneaky"" Houle"
 2,JS,"Smith, John","John ""X"" Smith"
 
------------------------------------------------------
+========================================================
+
+---6+ months no use
+
+unit | name          |     lastaccess
+-----+---------------+--------------------
+ 110 | Susan Soper   | [NEVER]
+ 305 | Bros Glenn    | 2021-01-22 13:15:37
+ 309 | Geetika Verma | 2013-09-28 16:46:21
+ 312 | Rosa Lacovara | 2018-10-19 12:40:56
+ VIS | Viscount      | 2013-10-25 12:49:19
+
+---3+ months no use
+ 
+FOB    UNT  OWNER
+10886  102  William Gautier
+32924  104  Hamed Tayyebani
+15487  108  Peter & Rita Chen
+15489  110  Susan Soper
+32927  204  Arthur (Parents Lisa & Bob Bush = ownes)
+19754  207  Bobby Gorman
+16062  209  Aurora Landin
+19327  214  Dennis Regan
+16068  301  Maria & Ray Jackman
+16069  302  Christina Berekoff
+16072  305  Graham, & ??? Glenn
+16076  309  Geetika  Verma
+16077  310  Gary  Hemow
+19761  311  Dennis Abalakov
+16079  312  Rosa Lacovara
+10887  313  Chung Ma & Grace (daughter - Patricia)
+32923  GAR  Garbage
+12345  VIS  Viscount
