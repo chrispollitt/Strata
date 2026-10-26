@@ -6,7 +6,7 @@ directory, so cron jobs and shells use the repo copy directly.
 | Script | What it does |
 |---|---|
 | `add_fob.sh <unit> <fob>` | Adds a fob to a unit in the MESH admin site by running the Playwright `addfob` test from the `WebAutomation` repo. The first argument is the **unit**, not the buzz code. |
-| `program_enterphone.sh <buzz> <tel>` | Programs an enterphone entry by dialling the buzzer from an Android phone over `adb`. `<buzz>` is the buzz code (555-965), `<tel>` is the 10-digit local number. |
+| `program_enterphone.sh <buzz> <tel>` | Programs an enterphone entry by dialling the buzzer from an Android phone over `adb`. `<buzz>` is the buzz code (555-965), `<tel>` is the 10-digit local number. If `ENTERPHONE_DISPLAY_HOST` is set (e.g. `pi@enterphone`), it then rebuilds the e-ink directory and sends it to the Pi (see `enterphone-display/`); a failure there only prints a warning. |
 | `check_garbage.sh` | Lists the days the "Garbage" fob was used, by querying the `mesh` Postgres database with `psql`. Writes `check_garbage.out`. |
 | `fob-log-query.pl` | Joins owners from `Contacts & Roles.xlsx` with fobs in the `mesh` database. |
 | `unit-query.pl` | Looks up a unit, buzz code, owner, phone, fob, key, laundry card or parking stall across the strata spreadsheets and the `mesh` database. |

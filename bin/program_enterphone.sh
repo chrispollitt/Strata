@@ -43,7 +43,7 @@ function main {
   done
   if [[ -z $phon ]]; then
     echo "error: no phone attached, exiting"
-    return
+    return 1
   fi
   echo "phon='$phon'"
   echo "dial='${dial/$pass/xxxxxxxx}'"
@@ -81,7 +81,18 @@ function main {
   adb -s $phon shell "input keyevent 6"
 }
 
-main ${1+"$@"}
+# Rebuild the e-ink directory and send it to the Pi (opt in by setting
+# ENTERPHONE_DISPLAY_HOST, e.g. pi@enterphone). Edit Contacts & Roles.xlsx first.
+# A failure here is reported but does not change this script's exit status.
+function update_display {
+  [[ -n $ENTERPHONE_DISPLAY_HOST ]] || return 0
+  local dir
+  dir="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../enterphone-display"
+  echo "Updating the enterphone display on $ENTERPHONE_DISPLAY_HOST"
+  "$dir/publish.sh" "$ENTERPHONE_DISPLAY_HOST" || echo "warning: display update failed"
+}
+
+main ${1+"$@"} && update_display
 
 # --------------------------------
 
