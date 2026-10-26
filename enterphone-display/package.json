@@ -1,0 +1,11 @@
+{
+  "name": "enterphone-display",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node directory.mjs"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0"
+  }
+}
