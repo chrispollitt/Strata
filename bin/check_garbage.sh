@@ -9,7 +9,7 @@ perl1='s,\d:\d{2}\.\d+,0,;s,\s+, ,g'
 perl2='s/^\s*\d{4}-//;/^(\d{2})-(\d{2})/ and push(@{$d{$1}} , $2);END{for $k (sort keys %d){print "--$k--\n".join("\n",@{$d{$k}})}}'
 
 function meshdb() {
-  PGPASSWORD=mesh psql -h mesh -U mesh -d mesh
+  psql -h mesh -U mesh -d mesh
 }
 
 echo "TODAY = $(date +'%Y-%m-%d')"

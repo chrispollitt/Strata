@@ -87,7 +87,7 @@ sub main(@argv) {
     }
   ) or die "Cannot connect: $DBI::errstr";
   my $dbh2 = DBI->connect(
-    "dbi:Pg:dbname=mesh;host=mesh", 'mesh', 'mesh', {
+    "dbi:Pg:dbname=mesh;host=mesh", 'mesh', undef, {
       AutoCommit => 0,
       RaiseError => 1,
     }
