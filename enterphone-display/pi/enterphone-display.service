@@ -1,0 +1,7 @@
+[Unit]
+Description=Redraw the enterphone directory if it changed
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/enterphone-display/display.py

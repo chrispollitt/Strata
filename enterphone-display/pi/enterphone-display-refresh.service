@@ -1,0 +1,6 @@
+[Unit]
+Description=Daily full refresh of the enterphone display (clears ghosting)
+
+[Service]
+Type=oneshot
+ExecStart=/opt/enterphone-display/display.py --force

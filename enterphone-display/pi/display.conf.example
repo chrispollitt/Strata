@@ -1,0 +1,10 @@
+# Copy to /etc/enterphone-display.conf
+[display]
+image = /var/lib/enterphone-display/directory.png
+# Optional: fetch the image from a URL on the local network first.
+# url = http://192.168.123.x:8000/directory.png
+# VCOM is printed on the panel's flex cable (e.g. -2.06).
+vcom = -2.06
+width = 1872
+height = 1404
+# rotate = CW
