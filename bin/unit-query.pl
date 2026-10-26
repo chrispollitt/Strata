@@ -6,6 +6,7 @@ use Excel2CSV;
 use DBI;
 use DBD::CSV;
 use DBD::Pg;
+use Foo_Bar;
 use Data::Dumper;
 use FindBin qw($Bin);
 use File::Copy;
@@ -87,7 +88,7 @@ sub main(@argv) {
     }
   ) or die "Cannot connect: $DBI::errstr";
   my $dbh2 = DBI->connect(
-    "dbi:Pg:dbname=mesh;host=mesh", 'mesh', undef, {
+    "dbi:Pg:dbname=mesh;host=mesh", foo('mesh'), {
       AutoCommit => 0,
       RaiseError => 1,
     }

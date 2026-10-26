@@ -19,8 +19,9 @@ directory, so cron jobs and shells use the repo copy directly.
 
 - `psql` and a route to the `mesh` server on the 123 network (e.g. host `cpbee`,
   or any machine with `postgresql-client`). The database password is not
-  stored in the repo: put it in `~/.pgpass` (`mesh:5432:mesh:mesh:<password>`,
-  mode 600) or set `PGPASSWORD`.
+  stored in the repo: the scripts get it from `foo("mesh")` in
+  `~/user_*/Foo_Bar.*` (add it once with `bar mesh <password> mesh` as the
+  user; the stored user name is `mesh`).
 - Perl with `Modern::Perl`, `DBI`, `DBD::CSV`, `DBD::Pg`, `Net::IMAP::Simple`,
   `Email::MIME` and the local `Foo_Bar` and `Excel2CSV` modules.
 - Gmail access uses an **app password**, looked up by `Foo_Bar`.
