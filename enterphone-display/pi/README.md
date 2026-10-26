@@ -1,6 +1,6 @@
-# Pi Zero side
+# Raspberry Pi side
 
-`display.py` runs on the Raspberry Pi Zero 2 W behind the 7.8" 1872x1404 e-ink
+`display.py` runs on the Raspberry Pi (3 B+ or Zero 2 W) behind the 7.8" 1872x1404 e-ink
 panel (Waveshare 7.8" HAT, IT8951 controller). It redraws the panel only when
 the directory image changes. **The panel driver code is untested** until the
 hardware arrives; the rest can be tried with `--dry-run`.
@@ -14,7 +14,7 @@ names, so keep it on the local network.
 
 ## Setup on the Pi
 
-1. Raspberry Pi OS Lite, wifi to VR180, SSH enabled. Enable SPI
+1. Raspberry Pi OS Lite, wired Ethernet to VR180 (PoE; wifi only for the bench), SSH enabled. Enable SPI
    (`raspi-config` -> Interface Options -> SPI).
 2. Install the driver and imaging libraries:
    ```sh

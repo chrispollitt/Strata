@@ -2,7 +2,7 @@
 
 Builds the enterphone directory (the paper sheet by the door) from
 `Contacts & Roles.xlsx`, as a step towards an e-ink display driven by a
-Raspberry Pi Zero on the VR180 wifi. The target panel is a 7.8" 1872x1404
+Raspberry Pi on the VR180 network (wired, over PoE). The target panel is a 7.8" 1872x1404
 e-ink display (about 6.2 x 4.7 in).
 
 ## Usage
@@ -42,4 +42,4 @@ first.
 - Decide what to show for a suite with no name yet (currently `?`).
 - Rebuild automatically when `Contacts & Roles.xlsx` changes.
 - Pi side: fetch the image, redraw the panel only when it changes.
-- Check how the panel copes with the outdoor cold, and the enclosure.
+- Enclosure and mounting at the door; rain and condensation are the main risks.
