@@ -58,6 +58,9 @@ Still to do:
      reader cable (e.g. Wiegand), possibly over Cat5. Find out where the Bridge
      is and whether the Cat5 at the door is a network cable or a reader cable.
      Do NOT put PoE on it until that is known.
+   - The "Doors" Bridge (123 network) has Reader 1 = Front Door on Relay 1 and
+     Reader 2 = Parkade Door on Relay 2; "Gate" is a separate Bridge. Fobs at
+     both doors depend on the Doors Bridge, so leave its power and network alone.
    - Find out what the receiver is and how it connects: plain Ethernet, or
      power on spare pairs. Ask the installer or check the MESH docs.
    - Put a small switch at the door, with the IR receiver on one port and the Pi
