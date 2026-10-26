@@ -27,7 +27,7 @@ sub main(@argv) {
   my $csv2 = "keys";
   my $csv3 = "lcards";
   my $csv4 = "parking";
-  chdir("$Bin/../docs/tmp");
+  chdir($ENV{HOME} . "/OneDrive/!Shared/Strata/docs/tmp");
   # Mapping of command-line arguments to the corresponding variables
   our($unit,$buzz,$owner, $phone,$fobl,$keyl,$lcardl,$parkingl,$match);
   my %fields = (

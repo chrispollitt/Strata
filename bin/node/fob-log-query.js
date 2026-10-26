@@ -35,7 +35,7 @@ our $Xls_file  = $ENV{HOME} . '/Dropbox/Shared/Home/!Contacts & Roles' . $Xls_ex
 
 sub main(@argv) {
   my $csv = "owners";
-  chdir("$Bin/../tmp");
+  chdir($ENV{HOME} . "/OneDrive/!Shared/Strata/tmp");
   # Convert Excel to CSV
   if(
     (! -f ($csv . $Xls_ext))         or

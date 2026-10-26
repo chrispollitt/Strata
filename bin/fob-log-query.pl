@@ -20,7 +20,7 @@ our $Xls_file  = $ENV{HOME} . '/OneDrive/!Shared/Strata/docs/Contacts & Roles' .
 
 sub main(@argv) {
   my $csv = "owners";
-  chdir("$Bin/../tmp");
+  chdir($ENV{HOME} . "/OneDrive/!Shared/Strata/tmp");
   # Convert Excel to CSV
   if(
     (! -f ($csv . $Xls_ext))         or
@@ -88,7 +88,7 @@ __END__
 
 -----------------------------------------------------
 
-cd ~/OneDrive/!Shared/Strata/bin
+cd ~/strata-bin
 
 ./fob-log-query.pl | (read h; echo "$h"; sort +1)
 echo "select logtime,cardnumber,result from logs where firstname = 'Garbage' order by logtime;"|meshdb|perl -lpe 's,\d:\d{2}\.\d+,0,;s,\s+, ,g'|sort|uniq

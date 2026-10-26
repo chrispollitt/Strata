@@ -19,7 +19,7 @@ host2u="whatwelo@whatwelove.org"
 iso8601_regex="^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
 
 # save pdf to Downloads
-cd ~/OneDrive/!Shared/Strata/bin
+cd "${BASH_SOURCE[0]%/*}"
 if [[ -z $1 ]]; then
   ./check_email.pl
   code=$(/home/chris/bin/get2fa_code.py | tr -d '[:space:]')
