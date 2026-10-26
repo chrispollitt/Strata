@@ -6,6 +6,7 @@
     "build": "node directory.mjs"
   },
   "dependencies": {
+    "@napi-rs/canvas": "^1.0.13",
     "exceljs": "^4.4.0"
   }
 }

@@ -1,15 +1,24 @@
-// Build the enterphone directory (JSON + SVG) from Contacts & Roles.xlsx.
-// Usage: node directory.mjs [path/to/Contacts & Roles.xlsx] [width] [height]
+// Build the enterphone directory from Contacts & Roles.xlsx for an e-ink panel.
+// Usage: node directory.mjs [--xlsx file] [--width 1872] [--height 1404] [--cols 2|3] [--out directory]
+// Writes <out>.json and <out>.png (pure black and white).
 import ExcelJS from "exceljs";
+import { createCanvas } from "@napi-rs/canvas";
 import { writeFileSync } from "node:fs";
+import { parseArgs } from "node:util";
 
-const src = process.argv[2] ??
-  "C:/Users/chris/OneDrive/!Shared/Strata/docs/Contacts & Roles.xlsx";
-const W = Number(process.argv[3] ?? 800);
-const H = Number(process.argv[4] ?? 480);
+const { values: o } = parseArgs({
+  options: {
+    xlsx: { type: "string", default: "C:/Users/chris/OneDrive/!Shared/Strata/docs/Contacts & Roles.xlsx" },
+    width: { type: "string", default: "1872" },
+    height: { type: "string", default: "1404" },
+    cols: { type: "string", default: "3" },
+    out: { type: "string", default: "directory" },
+  },
+});
+const W = Number(o.width), H = Number(o.height), COLS = Number(o.cols);
 
 const wb = new ExcelJS.Workbook();
-await wb.xlsx.readFile(src);
+await wb.xlsx.readFile(o.xlsx);
 const ws = wb.getWorksheet("All Units");
 const head = {};
 ws.getRow(1).eachCell((c, i) => (head[String(c.value).trim()] = i));
@@ -18,8 +27,8 @@ const cell = (row, name) => {
   return v == null ? "" : String(v.result ?? v).trim();
 };
 
-// Same as the spreadsheet's query: split "Enterphone Name" on "/"; keep Buzz.
-// Rows are kept by having a numeric Buzz code (rather than dropping the last 2).
+// As in the spreadsheet's query: split "Enterphone Name" on "/", keep Buzz.
+// Rows are kept by having a Buzz code (rather than dropping the last 2).
 const rows = [];
 ws.eachRow((row, n) => {
   if (n === 1) return;
@@ -29,33 +38,72 @@ ws.eachRow((row, n) => {
   rows.push({ name1, name2, buzz, suite: Number(cell(row, "Suite")) });
 });
 rows.sort((a, b) => a.name1.localeCompare(b.name1, "en", { sensitivity: "base" }));
-
 for (const r of rows) {
   if (!r.name1 || r.name1 === "?") console.warn(`warning: suite ${r.suite} has no enterphone name`);
 }
-writeFileSync("directory.json", JSON.stringify(rows, null, 2));
+writeFileSync(`${o.out}.json`, JSON.stringify(rows, null, 2));
 
-// Two columns, as on the printed sheet.
-const per = Math.ceil(rows.length / 2);
-const cols = [rows.slice(0, per), rows.slice(per)];
-const rowH = H / per;
-const fs = Math.floor(rowH * 0.7);
-const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
-let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">` +
-  `<rect width="100%" height="100%" fill="#fff"/><g font-family="Arial, sans-serif" font-size="${fs}" fill="#000">`;
-cols.forEach((col, ci) => {
-  const x0 = ci * (W / 2);
-  const w = W / 2;
-  col.forEach((r, i) => {
-    const y = (i + 1) * rowH;
-    svg += `<line x1="${x0}" y1="${y}" x2="${x0 + w}" y2="${y}" stroke="#000"/>`;
-    const ty = y - rowH * 0.25;
-    svg += `<text x="${x0 + 4}" y="${ty}">${esc(r.name1)}</text>`;
-    if (r.name2) svg += `<text x="${x0 + w * 0.5}" y="${ty}">${esc(r.name2)}</text>`;
-    svg += `<text x="${x0 + w - 4}" y="${ty}" text-anchor="end">${r.buzz}</text>`;
-  });
-  svg += `<line x1="${x0}" y1="0" x2="${x0}" y2="${H}" stroke="#000"/>`;
+// Layout: COLS columns filled top to bottom, like the printed sheet.
+const canvas = createCanvas(W, H);
+const g = canvas.getContext("2d");
+g.fillStyle = "#fff";
+g.fillRect(0, 0, W, H);
+g.fillStyle = g.strokeStyle = "#000";
+g.textBaseline = "alphabetic";
+
+const M = Math.round(W * 0.02), GAP = Math.round(W * 0.025);
+const per = Math.ceil(rows.length / COLS);
+const rowH = (H - 2 * M) / per;
+const colW = (W - 2 * M - GAP * (COLS - 1)) / COLS;
+const font = (px) => `${px}px Arial, Helvetica, sans-serif`;
+const pad = Math.round(rowH * 0.18);
+const width = (text, px) => (g.font = font(px), g.measureText(text).width);
+
+// One font size for the whole sheet: the largest that fits every cell.
+let base = Math.floor(rowH * 0.62);
+const buzzNeed = (px) => width("000", px) + 2 * pad;
+const fits = (px) => {
+  const buzzW = buzzNeed(px), nameW = colW - buzzW;
+  return rows.every((r) => r.name2
+    ? Math.max(width(r.name1, px), width(r.name2, px)) <= nameW / 2 - 2 * pad
+    : width(r.name1, px) <= nameW - 2 * pad);
+};
+while (!fits(base) && base > 8) base--;
+const buzzW = buzzNeed(base);
+
+function put(text, x, y, align = "left", maxW) {
+  g.font = font(base);
+  g.textAlign = align;
+  g.fillText(text, x, y);
+}
+
+g.lineWidth = Math.max(2, Math.round(W / 900));
+rows.forEach((r, i) => {
+  const ci = Math.floor(i / per), ri = i % per;
+  const x = M + ci * (colW + GAP);
+  const y = M + ri * rowH;
+  const ty = y + rowH * 0.5 + base * 0.35;
+  const nameW = colW - buzzW;
+  g.strokeRect(x, y, colW, rowH);
+  g.beginPath();
+  g.moveTo(x + nameW, y); g.lineTo(x + nameW, y + rowH);
+  if (r.name2) { g.moveTo(x + nameW / 2, y); g.lineTo(x + nameW / 2, y + rowH); }
+  g.stroke();
+  if (r.name2) {
+    put(r.name1, x + pad, ty);
+    put(r.name2, x + nameW / 2 + pad, ty);
+  } else {
+    put(r.name1, x + pad, ty);
+  }
+  put(String(r.buzz), x + colW - pad, ty, "right");
 });
-svg += "</g></svg>\n";
-writeFileSync("directory.svg", svg);
-console.log(`${rows.length} entries -> directory.json, directory.svg (${W}x${H})`);
+
+// Pure black and white, no anti-aliasing greys, for the e-ink panel.
+const img = g.getImageData(0, 0, W, H);
+for (let p = 0; p < img.data.length; p += 4) {
+  const v = img.data[p] + img.data[p + 1] + img.data[p + 2] > 384 ? 255 : 0;
+  img.data[p] = img.data[p + 1] = img.data[p + 2] = v;
+}
+g.putImageData(img, 0, 0);
+writeFileSync(`${o.out}.png`, canvas.toBuffer("image/png"));
+console.log(`${rows.length} entries, ${COLS} columns of ${per} -> ${o.out}.png (${W}x${H})`);
