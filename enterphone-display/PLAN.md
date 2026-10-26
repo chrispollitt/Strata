@@ -52,6 +52,12 @@ Still to do:
 2. Bench test: fit the HAT to the Pi, install Raspberry Pi OS Lite, enable SPI,
    install the driver, run `display.py` on a desk with a test image.
 3. The Cat5 run to the door already carries the fob IR receiver's network connection, so it is shared, not free:
+   - MESH lists two Freedom Bridge 2-Rdr/R2/Supv controllers (probably two
+     readers and two relays each) on the 123 network. The network device is the
+     Bridge, not the reader: the reader is probably wired to the Bridge with a
+     reader cable (e.g. Wiegand), possibly over Cat5. Find out where the Bridge
+     is and whether the Cat5 at the door is a network cable or a reader cable.
+     Do NOT put PoE on it until that is known.
    - Find out what the receiver is and how it connects: plain Ethernet, or
      power on spare pairs. Ask the installer or check the MESH docs.
    - Put a small switch at the door, with the IR receiver on one port and the Pi
@@ -88,5 +94,6 @@ Still to do:
 
 - Which panel exactly, and where is the other end of the Cat5 run?
 - What exactly is the fob IR receiver, and does it use any spare pairs on the Cat5 run?
+- Where is the Bridge mounted, and which cable at the door goes to it?
 - Pull (`url` in the Pi config) or push (`publish.sh`)? Push is implemented.
 - What to show for a vacant or unnamed suite?
